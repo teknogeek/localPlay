@@ -1,9 +1,11 @@
-package localPlay;
+package localPlay.client;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.swing.JLabel;
 
 public class KeyListener extends KeyAdapter
 {
@@ -22,17 +24,14 @@ public class KeyListener extends KeyAdapter
 	        // Iterate over pressed to get the keys.
 	    	for(Integer key : pressed)
 	    	{
-	    		all += e.getKeyText(key) + " ";
+	    		all += e.getExtendedKeyCodeForChar(key) + ", ";
 	    	}
-	    	Main.this.keys.setText("");
-	    	main.keys.setText(all);
-	    	System.out.println(all);
+	    	all = all.substring(0, all.length() - 2);
+	    	Client.keys.setText(all);
 	    }
 	    else
 	    {
-	    	main.keys.setText("");
-	    	main.keys.setText(e.getKeyText(e.getKeyCode()));
-	    	System.out.println(e.getKeyText(e.getKeyCode()));
+	    	Client.keys.setText(String.valueOf(e.getExtendedKeyCodeForChar(e.getKeyCode())));
 	    }
 	}
 	
@@ -40,6 +39,7 @@ public class KeyListener extends KeyAdapter
 	public synchronized void keyReleased(KeyEvent e)
 	{
 		pressed.remove(e.getKeyCode());
+		Client.keys.setText("Waiting for input...");
 	}
 	
 	@Override
