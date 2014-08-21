@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Arrays;
 
 import localPlay.client.KnockKnockProtocol;
 
@@ -47,12 +48,13 @@ public class Server
 		        out.println(outputLine);
 		        if(!outputLine.equals(""))
 		        {
-		        	if(inputLine.contains(","))
+		        	if(outputLine.contains(","))
 		        	{
-		        		String[] keys = inputLine.split(",");
-		        		
+		        		String[] keys = outputLine.split(",");
 		        		for(String k : keys)
 		        		{
+		        			out.println(Arrays.toString(keys));
+		        			out.println(Integer.valueOf(k));
 		        			robot.keyPress(Integer.valueOf(k));
 		        		}
 		        		
@@ -61,8 +63,11 @@ public class Server
 				        	robot.keyRelease(Integer.valueOf(k));
 		        		}
 		        	}
-		        	robot.keyPress(Integer.valueOf(inputLine));
-		        	robot.keyRelease(Integer.valueOf(inputLine));
+		        	else
+		        	{
+		        		robot.keyPress(Integer.valueOf(outputLine));
+			        	robot.keyRelease(Integer.valueOf(outputLine));
+		        	}
 		        }
 		        if(outputLine.equals("Bye."))
 		        {

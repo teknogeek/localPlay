@@ -55,7 +55,7 @@ public class Client
 	
 	public void startClientConnect() throws Exception
 	{
-		String hostName = "localhost";
+		String hostName = userIP;
 		int portNumber = 6969;
 
 		try

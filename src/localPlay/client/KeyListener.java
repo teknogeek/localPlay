@@ -24,9 +24,9 @@ public class KeyListener extends KeyAdapter
 	        // Iterate over pressed to get the keys.
 	    	for(Integer key : pressed)
 	    	{
-	    		all += e.getExtendedKeyCodeForChar(key) + ", ";
+	    		all += e.getExtendedKeyCodeForChar(key) + ",";
 	    	}
-	    	all = all.substring(0, all.length() - 2);
+	    	all = all.substring(0, all.length() - 1);
 	    	Client.keys.setText(all);
 	    }
 	    else
