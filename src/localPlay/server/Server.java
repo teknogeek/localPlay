@@ -68,6 +68,7 @@ public class Server
 		        {
 		        	if(!keys.getText().equals(outputLine) && !keys.getText().equals("none"))
 		        	{
+		        		System.out.println("not the same");
 		        		if(keys.getText().contains(" "))
 			        	{
 		        			String[] oldArray = keys.getText().split(" ");
@@ -91,6 +92,7 @@ public class Server
 			        	}
 		        		else
 		        		{
+		        			System.out.println("pressing " + outputLine);
 		        			robot.keyPress(KeyEvent.class.getField(outputLine).getInt(null));
 		        		}
 		        	}

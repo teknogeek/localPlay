@@ -36,11 +36,11 @@ public class Client
 	    
 	    KeyListener keyListener = new KeyListener();
 	    keyListener.fill();
-	    frame.addKeyListener(keyListener);
+	    input.addKeyListener(keyListener);
 	    
 	    frame.setSize(300, 200);
 	    frame.add(keys);
-	    //frame.add(input);
+	    frame.add(input);
 	    frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 	    frame.setVisible(true);
 	    
