@@ -34,7 +34,10 @@ public class Client
 	    JTextArea input = new JTextArea();
 	    input.setSize(100, 100);
 	    
-	    frame.addKeyListener(new KeyListener());
+	    KeyListener keyListener = new KeyListener();
+	    keyListener.fill();
+	    frame.addKeyListener(keyListener);
+	    
 	    frame.setSize(300, 200);
 	    frame.add(keys);
 	    //frame.add(input);
@@ -61,24 +64,24 @@ public class Client
 		try
 		(
 		    Socket kkSocket = new Socket(hostName, portNumber);
-		    PrintWriter out = new PrintWriter(kkSocket.getOutputStream(), true);
-		    BufferedReader in = new BufferedReader(new InputStreamReader(kkSocket.getInputStream()));
+		    PrintWriter outToServer = new PrintWriter(kkSocket.getOutputStream(), true);
+		    BufferedReader inFromServer = new BufferedReader(new InputStreamReader(kkSocket.getInputStream()));
 		)
 		{
-			while((fromServer = in.readLine()) != null)
+			while((fromServer = inFromServer.readLine()) != null)
 			{
 			    if(fromServer.equals("Bye."))
 			    {
 			    	break;
 			    }
-			    	System.out.println("Server: " + fromServer);
+			    if(!fromServer.equals("none")) System.out.println("Server: " + fromServer);
 			    
 			    
 			    fromUser = keys.getText();
 			    if(fromUser != null)
 			    {
 			    	if(!fromUser.equals("Waiting for input...")) System.out.println("Client: " + fromUser);
-			    	out.println(fromUser);
+			    	outToServer.println(fromUser);
 			    }
 			}
 		}

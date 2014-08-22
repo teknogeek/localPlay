@@ -9,12 +9,29 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
 
-import localPlay.client.KnockKnockProtocol;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
+
+import localPlay.client.KeyListener;
 
 public class Server
 {
+	public JLabel keys;
+	
 	public void server() throws Exception
 	{
+		JFrame frame = new JFrame("Server");
+		
+		keys = new JLabel("", SwingConstants.CENTER);
+	    keys.setFont(keys.getFont().deriveFont(18.0f));
+
+	    frame.setSize(300, 200);
+	    frame.add(keys);
+	    frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+	    frame.setVisible(true);
+	    
 		startServerListener();
 	}
 	
@@ -22,53 +39,63 @@ public class Server
 	{
 		int portNumber = 6969;
 		try
-		( 
+		(
 			ServerSocket serverSocket = new ServerSocket(portNumber);
 			Socket clientSocket = serverSocket.accept();
-			PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-			BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+			PrintWriter outToClient = new PrintWriter(clientSocket.getOutputStream(), true);
+			BufferedReader inFromClient = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 		)
 		{
 		    String inputLine, outputLine;
-			            
+		    
 		    // Initiate conversation with client
-		    KnockKnockProtocol kkp = new KnockKnockProtocol();
-		    outputLine = kkp.processInput(null);
-		    out.println(outputLine);
+		    Protocol protocol = new Protocol();
+		    outputLine = protocol.processInput(null);
+		    outToClient.println(outputLine);
 		    
 	        // Simulate a key press
-	        
 		    Robot robot = new Robot();
 	        
 	        //robot.keyPress(KeyEvent.VK_ALT);
 	        
-		    while((inputLine = in.readLine()) != null)
+		    while((inputLine = inFromClient.readLine()) != null)
 		    {
-		        outputLine = kkp.processInput(inputLine);
-		        out.println(outputLine);
-		        if(!outputLine.equals(""))
+		    	keys.setText(outputLine);
+		        outputLine = protocol.processInput(inputLine);
+		        outToClient.println(outputLine);
+		        
+		        if(!outputLine.equals("none"))
 		        {
-		        	if(outputLine.contains(","))
+		        	if(!keys.getText().equals(outputLine) && !keys.getText().equals("none"))
 		        	{
-		        		String[] keys = outputLine.split(",");
-		        		for(String k : keys)
+		        		if(keys.getText().contains(" "))
+			        	{
+		        			String[] oldArray = keys.getText().split(" ");
+			        		for(String k : oldArray)
+			        		{
+					        	robot.keyRelease(KeyEvent.class.getField(k).getInt(null));
+			        		}
+			        	}
+		        		else
 		        		{
-		        			out.println(Arrays.toString(keys));
-		        			out.println(Integer.valueOf(k));
-		        			robot.keyPress(Integer.valueOf(k));
+		        			robot.keyRelease(KeyEvent.class.getField(keys.getText()).getInt(null));
 		        		}
 		        		
-		        		for(String k : keys)
+		        		if(outputLine.contains(" "))
+			        	{
+		        			String[] newArray = outputLine.split(" ");
+			        		for(String k : newArray)
+			        		{
+					        	robot.keyPress(KeyEvent.class.getField(k).getInt(null));
+			        		}
+			        	}
+		        		else
 		        		{
-				        	robot.keyRelease(Integer.valueOf(k));
+		        			robot.keyPress(KeyEvent.class.getField(outputLine).getInt(null));
 		        		}
 		        	}
-		        	else
-		        	{
-		        		robot.keyPress(Integer.valueOf(outputLine));
-			        	robot.keyRelease(Integer.valueOf(outputLine));
-		        	}
 		        }
+		        
 		        if(outputLine.equals("Bye."))
 		        {
 		            break;

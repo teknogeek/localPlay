@@ -1,12 +1,9 @@
-package localPlay.client;
-
-import java.net.*;
-import java.io.*;
+package localPlay.server;
  
-public class KnockKnockProtocol
+public class Protocol
 {
     private static final int WAITING = 0;
-    private static final int SENTKNOCKKNOCK = 1;
+    private static final int SENTWAITING = 1;
  
     private int state = WAITING;
  
@@ -17,17 +14,13 @@ public class KnockKnockProtocol
         if(state == WAITING)
         {
             theOutput = "Waiting for input";
-            state = SENTKNOCKKNOCK;
+            state = SENTWAITING;
         }
-        else if(state == SENTKNOCKKNOCK)
+        else if(state == SENTWAITING)
         {
-        	if(theInput.equals("Ctrl + Alt + A"))
+        	if(theInput.equals("Waiting for input..."))
         	{
-               	theOutput = "Bye.";
-        	}
-        	else if(theInput.equals("Waiting for input..."))
-        	{
-        		theOutput = "";
+        		theOutput = "none";
         	}
         	else
         	{
