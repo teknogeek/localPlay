@@ -5,20 +5,23 @@ import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
-import localPlay.client.KeyListener;
-
 public class Server
 {
-	public JLabel keys;
+	public static JLabel keys;
+	public static Robot robot;
+	public Set<String> nowPressed = new HashSet<String>();
+	public static String inputLine, outputLine;
 	
 	public void server() throws Exception
 	{
@@ -45,64 +48,80 @@ public class Server
 			PrintWriter outToClient = new PrintWriter(clientSocket.getOutputStream(), true);
 			BufferedReader inFromClient = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 		)
-		{
-		    String inputLine, outputLine;
-		    
+		{   
 		    // Initiate conversation with client
 		    Protocol protocol = new Protocol();
 		    outputLine = protocol.processInput(null);
 		    outToClient.println(outputLine);
 		    
 	        // Simulate a key press
-		    Robot robot = new Robot();
+		    robot = new Robot();
 	        
 	        //robot.keyPress(KeyEvent.VK_ALT);
 	        
 		    while((inputLine = inFromClient.readLine()) != null)
 		    {
-		    	keys.setText(outputLine);
 		        outputLine = protocol.processInput(inputLine);
 		        outToClient.println(outputLine);
 		        
-		        if(!outputLine.equals("none"))
+		        if(!outputLine.equals("none") && !outputLine.contains("VK_UNDEFINED"))
 		        {
-		        	if(!keys.getText().equals(outputLine) && !keys.getText().equals("none"))
+		        	if(!nowPressed.contains(outputLine))
 		        	{
-		        		System.out.println("not the same");
-		        		if(keys.getText().contains(" "))
-			        	{
-		        			String[] oldArray = keys.getText().split(" ");
-			        		for(String k : oldArray)
-			        		{
-					        	robot.keyRelease(KeyEvent.class.getField(k).getInt(null));
-			        		}
-			        	}
-		        		else
-		        		{
-		        			robot.keyRelease(KeyEvent.class.getField(keys.getText()).getInt(null));
-		        		}
-		        		
 		        		if(outputLine.contains(" "))
-			        	{
-		        			String[] newArray = outputLine.split(" ");
-			        		for(String k : newArray)
-			        		{
-					        	robot.keyPress(KeyEvent.class.getField(k).getInt(null));
-			        		}
-			        	}
+		        		{
+		        			String[] split = outputLine.split(" ");
+		        			pressMultipleKeys(split);
+		        		}
 		        		else
 		        		{
-		        			System.out.println("pressing " + outputLine);
-		        			robot.keyPress(KeyEvent.class.getField(outputLine).getInt(null));
+		        			pressKey(outputLine);
 		        		}
 		        	}
 		        }
+		        else if(nowPressed.size() > 0)
+		        {
+		        	String[] nowPressedArray = nowPressed.toArray(new String[nowPressed.size()]);
+		        	releaseMultipleKeys(nowPressedArray);
+		        }
+		        
+		    	keys.setText(outputLine);
 		        
 		        if(outputLine.equals("Bye."))
 		        {
 		            break;
 		        }
 		    }
+		}
+	}
+	
+	public void pressKey(String key) throws Exception
+	{
+		robot.keyPress(KeyEvent.class.getField(key).getInt(null));
+		nowPressed.add(key);
+	}
+	
+	public void releaseKey(String key) throws Exception
+	{
+		robot.keyRelease(KeyEvent.class.getField(key).getInt(null));
+		nowPressed.remove(key);
+	}
+	
+	public void pressMultipleKeys(String[] keys) throws Exception
+	{
+		for(String key : keys)
+		{
+			nowPressed.add(key);
+			robot.keyPress(KeyEvent.class.getField(key).getInt(null));
+		}
+	}
+	
+	public void releaseMultipleKeys(String[] keys) throws Exception
+	{
+		for(String key : keys)
+		{
+			nowPressed.remove(key);
+			robot.keyRelease(KeyEvent.class.getField(key).getInt(null));
 		}
 	}
 	
@@ -115,6 +134,9 @@ public class Server
 		catch(Exception e)
 		{
 			e.printStackTrace();
+//			StringWriter outError = new StringWriter();
+//			e.printStackTrace(new PrintWriter(outError));
+//			keys.setText(outError.toString());
 		}
 	}
 }
